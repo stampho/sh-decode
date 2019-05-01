@@ -1,0 +1,129 @@
+<html>
+<head>
+    <title>DECoDER</title>
+
+    <style>
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid black;
+}
+
+td {
+    width: 25px;
+    text-align: center;
+}
+    </style>
+
+    <script>
+var codeA = 65;
+var keyMap = {}
+var keySeq = "AOEPCTQIHJGFKBRYLVDZNXUWMS";
+
+function init() {
+    for (var i = 0; i < keySeq.length; ++i)
+        keyMap[keySeq[i]] = String.fromCharCode(codeA + i);
+
+    document.getElementById("encodedText").innerHTML =
+        "GIBRIV. APXSLP. QIEPBZD FSW AP JKBXK. IC\n" +
+        "RLBAGPF TB DB VPNPK KPXOBFPK.\n" +
+        "\n" +
+        "NVWMVO. KJUYBA. WU EAJVN. VR\n" +
+        "MAWGNBXO OBB VXLWRRJE GBELNBLBX.\n"
+
+    document.getElementById("leftShiftButton").addEventListener("click", leftShift);
+    document.getElementById("rightShiftButton").addEventListener("click", rightShift);
+
+    generateKeyTable();
+    document.getElementById("decodedText").innerHTML = decode(document.getElementById("encodedText").innerHTML);
+}
+
+function leftShift() {
+    var first = keySeq[0]
+    var last = keySeq[keySeq.length-1]
+
+    var tmp = keyMap[first]
+    for (var i = 0; i < keySeq.length-1; ++i)
+        keyMap[keySeq[i]] = keyMap[keySeq[i+1]]
+    keyMap[last] = tmp;
+
+    generateKeyTable();
+    document.getElementById("decodedText").innerHTML = decode(document.getElementById("encodedText").innerHTML);
+}
+
+function rightShift() {
+    var first = keySeq[0]
+    var last = keySeq[keySeq.length-1]
+
+    var tmp = keyMap[last]
+    for (i = keySeq.length-1; i > 0; --i)
+        keyMap[keySeq[i]] = keyMap[keySeq[i-1]]
+    keyMap[first] = tmp
+
+    generateKeyTable();
+    document.getElementById("decodedText").innerHTML = decode(document.getElementById("encodedText").innerHTML);
+}
+
+function generateKeyTable() {
+    var keyTable = document.getElementById("keyTable");
+    keyTable.innerHTML = "";
+
+    {
+        var row = document.createElement("tr");
+
+        for (var ch in keyMap) {
+            var cell = document.createElement("td");
+            cell.innerHTML = "<b>" + ch + "</b>";
+            row.appendChild(cell);
+        }
+
+        keyTable.appendChild(row);
+    }
+
+    {
+        var row = document.createElement("tr");
+
+        for (var ch in keyMap) {
+            var cell = document.createElement("td");
+            cell.innerHTML = keyMap[ch];
+            row.appendChild(cell);
+        }
+
+        keyTable.appendChild(row);
+    }
+}
+
+function decode(input) {
+    var output = "";
+
+    for (ch of input) {
+        if (keyMap[ch] == undefined)
+            output += ch;
+        else
+            output += keyMap[ch];
+    }
+
+    return output;
+}
+    </script>
+</head>
+
+<body onLoad="init()">
+    <h1>DECoDER</h1>
+
+    <div style="height:50px;margin-top:50px">
+        <button id="leftShiftButton" type="button" style="float:left;height:100%"><b>&#60;&#60;</b></button>
+        <table id="keyTable" border="1" style="float:left;height:100%"></table>
+        <button id="rightShiftButton" type="button" style="float:left;height:100%"><b>&#62;&#62;</b></button>
+    </div>
+
+    <div style="margin-top:50px">
+        <textarea id="encodedText" rows="6" cols="50" style="float:left;margin-left:25px"></textarea>
+        <span style="float:left;margin-left:25px;padding-top:25px"><b>&#60;=&#62;</b></span>
+        <textarea id="decodedText" rows="6" cols="50" style="float:left;margin-left:25px"></textarea>
+    </div>
+
+</body>
+</html>
